@@ -20,7 +20,7 @@ public class Report {
 
     @FunctionalInterface
     public interface Reporter {
-        void writeLine(String line) throws IOException;
+        void write(String line) throws IOException;
     }
 
 
@@ -57,7 +57,7 @@ public class Report {
 
     public void report(Reporter reporter) throws IOException {
         for (Dependency dependency : this.snapshotDependencies) {
-            reporter.writeLine(String.format("%s:%s:%s:%s",
+            reporter.write(String.format("%s:%s:%s:%s\n",
                     dependency.getGroupId(),
                     dependency.getArtifactId(),
                     dependency.getVersion(),

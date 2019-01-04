@@ -101,8 +101,8 @@ public class AllDependenciesAreReleasedCheckTest {
         report.report(line -> reported.add(line));
 
         assertThat(reported, contains(
-                "org.test:test-dep-1:1.0.0-SNAPSHOT:runtime",
-                "org.test:test-dep-4:1.0.0-SNAPSHOT:runtime"
+                "org.test:test-dep-1:1.0.0-SNAPSHOT:runtime\n",
+                "org.test:test-dep-4:1.0.0-SNAPSHOT:runtime\n"
         ));
     }
 

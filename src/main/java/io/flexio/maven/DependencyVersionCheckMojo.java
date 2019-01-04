@@ -33,7 +33,7 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
         Report report = new AllDependenciesAreReleasedCheck(deps).check();
 
         if(this.reportTo != null) {
-            try(OutputStream out = new FileOutputStream(this.reportTo)) {
+            try(OutputStream out = new FileOutputStream(this.reportTo, true)) {
                 report.report(line -> out.write(line.getBytes("UTF-8")));
                 out.flush();
             } catch (IOException e) {
