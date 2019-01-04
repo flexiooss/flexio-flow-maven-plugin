@@ -29,7 +29,7 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
         this.checkDependencies(this.project.getDependencies());
     }
 
-    private void checkDependencies(List<Dependency> deps) throws MojoFailureException {
+    private void checkDependencies(List<Dependency> deps) throws MojoFailureException, MojoExecutionException {
         Report report = new AllDependenciesAreReleasedCheck(deps).check();
 
         if(this.reportTo != null) {
@@ -37,7 +37,7 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
                 report.report(line -> out.write(line.getBytes("UTF-8")));
                 out.flush();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new MojoExecutionException("failed writing report to file : " + this.reportTo.getAbsolutePath(), e);
             }
         }
 
