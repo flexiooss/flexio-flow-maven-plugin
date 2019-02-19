@@ -36,7 +36,7 @@ public class ParentVersionCheckMojo extends AbstractMojo {
 
             if(this.reportTo != null) {
                 try(OutputStream out = new FileOutputStream(this.reportTo, true)) {
-                    out.write(String.format("%s:%s:%s:compile\n", coordinates).getBytes("UTF-8"));
+                    out.write(String.format("%s:compile\n", coordinates).getBytes("UTF-8"));
                     out.flush();
 
                 } catch (IOException e) {
