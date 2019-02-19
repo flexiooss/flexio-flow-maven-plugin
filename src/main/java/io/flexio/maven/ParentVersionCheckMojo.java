@@ -24,11 +24,13 @@ public class ParentVersionCheckMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        this.check(this.project.getParent());
+        if(this.project.getParent() != null) {
+            this.check(this.project.getParent());
+        }
     }
 
     private void check(MavenProject project) throws MojoFailureException, MojoExecutionException {
-        if(project.getParent().getVersion().endsWith("-SNAPSHOT")) {
+        if(this.isSnapshot(project)) {
             String coordinates = String.format("%s:%s:%s", project.getGroupId(), project.getArtifactId(), project.getVersion());
             String message = String.format("parent is not released : %s", coordinates);
 
@@ -43,6 +45,18 @@ public class ParentVersionCheckMojo extends AbstractMojo {
             }
             this.getLog().error(message);
             throw new MojoFailureException("parent is still in SNAPSHOT version, see logs");
+        }
+    }
+
+    private boolean isSnapshot(MavenProject project) {
+        if(project.getParent() != null && project.getParent().getVersion() != null) {
+            return project.getParent().getVersion().endsWith("-SNAPSHOT");
+        } else {
+            this.getLog().warn(String.format(
+                    "project parent has no version, assuming not released (%s:%s:%s)",
+                    project.getGroupId(), project.getArtifactId(), project.getVersion()
+            ));
+            return true;
         }
     }
 }
