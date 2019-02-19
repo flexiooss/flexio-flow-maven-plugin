@@ -11,6 +11,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,13 +21,26 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
+    @Parameter(required = false, alias = "report-to", property = "report.to")
+    private File reportTo;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        List<Dependency> deps = new LinkedList<>();
-        deps.addAll(this.project.getDependencies());
-        deps.addAll(this.project.getDependencyManagement().getDependencies());
-        
+        this.checkDependencies(this.project.getDependencies());
+    }
+
+    private void checkDependencies(List<Dependency> deps) throws MojoFailureException, MojoExecutionException {
         Report report = new AllDependenciesAreReleasedCheck(deps).check();
+
+        if(this.reportTo != null) {
+            try(OutputStream out = new FileOutputStream(this.reportTo, true)) {
+                report.report(line -> out.write(line.getBytes("UTF-8")));
+                out.flush();
+            } catch (IOException e) {
+                throw new MojoExecutionException("failed writing report to file : " + this.reportTo.getAbsolutePath(), e);
+            }
+        }
+
         if(report.isFailure()) {
             report.log(this.getLog(), Report.LogToLevel.ERROR);
             throw new MojoFailureException("some dependencies are still in SNAPSHOT version, see logs");
