@@ -26,11 +26,14 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        this.checkDependencies(this.project.getDependencies());
+        this.checkDependencies("declared", this.project.getOriginalModel().getDependencies());
+        this.checkDependencies("declared dependency management", this.project.getOriginalModel().getDependencyManagement().getDependencies());
+        this.checkDependencies("resolved", this.project.getDependencies());
+        this.checkDependencies("resolved dependency management", this.project.getDependencyManagement().getDependencies());
     }
 
-    private void checkDependencies(List<Dependency> deps) throws MojoFailureException, MojoExecutionException {
-        Report report = new AllDependenciesAreReleasedCheck(deps).check();
+    private void checkDependencies(String level, List<Dependency> deps) throws MojoFailureException, MojoExecutionException {
+        Report report = new AllDependenciesAreReleasedCheck(deps, this.getLog()).check();
 
         if(this.reportTo != null) {
             try(OutputStream out = new FileOutputStream(this.reportTo, true)) {
@@ -43,7 +46,7 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
 
         if(report.isFailure()) {
             report.log(this.getLog(), Report.LogToLevel.ERROR);
-            throw new MojoFailureException("some dependencies are still in SNAPSHOT version, see logs");
+            throw new MojoFailureException("some " + level + " dependencies are still in SNAPSHOT version, see logs");
         } else {
             report.log(this.getLog(), Report.LogToLevel.INFO);
         }

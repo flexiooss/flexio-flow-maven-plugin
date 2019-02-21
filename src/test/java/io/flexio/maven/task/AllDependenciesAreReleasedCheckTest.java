@@ -25,7 +25,7 @@ public class AllDependenciesAreReleasedCheckTest {
 
     @Test
     public void givenNoDependency__thenCheckPasses() throws Exception {
-        Report report = new AllDependenciesAreReleasedCheck(Collections.emptyList()).check();
+        Report report = new AllDependenciesAreReleasedCheck(Collections.emptyList(), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(false));
@@ -36,7 +36,7 @@ public class AllDependenciesAreReleasedCheckTest {
     public void givenOneDependency__whenIsSnapshot__thenCheckFailsWithLogs() throws Exception {
         Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
                 this.createDependency("org.test", "test-dep", "1.0.0-SNAPSHOT", "runtime")
-        )).check();
+        ), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(true));
@@ -49,7 +49,7 @@ public class AllDependenciesAreReleasedCheckTest {
     public void givenOneDependency__whenIsReleased__thenCheckPassesWithoutLogs() throws Exception {
         Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
                 this.createDependency("org.test", "test-dep", "1.0.0", "compile")
-        )).check();
+        ), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(false));
@@ -63,7 +63,7 @@ public class AllDependenciesAreReleasedCheckTest {
                 this.createDependency("org.test", "test-dep-2", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-3", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-4", "1.0.0-SNAPSHOT", "runtime")
-        )).check();
+        ), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(true));
@@ -80,7 +80,7 @@ public class AllDependenciesAreReleasedCheckTest {
                 this.createDependency("org.test", "test-dep-2", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-3", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-4", "1.0.0", "runtime")
-        )).check();
+        ), null).check();
 
         List<String> reported =new LinkedList<>();
         report.report(line -> reported.add(line));
@@ -95,7 +95,7 @@ public class AllDependenciesAreReleasedCheckTest {
                 this.createDependency("org.test", "test-dep-2", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-3", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-4", "1.0.0-SNAPSHOT", "runtime")
-        )).check();
+        ), null).check();
 
         List<String> reported =new LinkedList<>();
         report.report(line -> reported.add(line));
