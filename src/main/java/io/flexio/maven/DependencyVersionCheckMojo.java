@@ -26,10 +26,18 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        this.checkDependencies("declared", this.project.getOriginalModel().getDependencies());
-        this.checkDependencies("declared dependency management", this.project.getOriginalModel().getDependencyManagement().getDependencies());
-        this.checkDependencies("resolved", this.project.getDependencies());
-        this.checkDependencies("resolved dependency management", this.project.getDependencyManagement().getDependencies());
+        if(this.project.getOriginalModel() != null && this.project.getOriginalModel().getDependencies() != null) {
+            this.checkDependencies("declared", this.project.getOriginalModel().getDependencies());
+        }
+        if(this.project.getOriginalModel() != null && this.project.getOriginalModel().getDependencyManagement() != null && this.project.getOriginalModel().getDependencyManagement().getDependencies() != null) {
+            this.checkDependencies("declared dependency management", this.project.getOriginalModel().getDependencyManagement().getDependencies());
+        }
+        if(this.project.getDependencies() != null) {
+            this.checkDependencies("resolved", this.project.getDependencies());
+        }
+        if(this.project.getDependencyManagement() != null && this.project.getDependencyManagement().getDependencies() != null) {
+            this.checkDependencies("resolved dependency management", this.project.getDependencyManagement().getDependencies());
+        }
     }
 
     private void checkDependencies(String level, List<Dependency> deps) throws MojoFailureException, MojoExecutionException {

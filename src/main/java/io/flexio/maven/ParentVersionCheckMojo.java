@@ -49,8 +49,8 @@ public class ParentVersionCheckMojo extends AbstractMojo {
     }
 
     private boolean isSnapshot(MavenProject project) {
-        if(project.getParent() != null && project.getParent().getVersion() != null) {
-            return project.getParent().getVersion().endsWith("-SNAPSHOT");
+        if(project.getVersion() != null) {
+            return project.getVersion().endsWith("-SNAPSHOT");
         } else {
             this.getLog().warn(String.format(
                     "project parent has no version, assuming not released (%s:%s:%s)",
