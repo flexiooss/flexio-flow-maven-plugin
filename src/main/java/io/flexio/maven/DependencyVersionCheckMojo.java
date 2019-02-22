@@ -39,7 +39,7 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
 
 
         if(this.project.getOriginalModel().getBuild() != null && this.project.getOriginalModel().getBuild().getPlugins() != null) {
-            this.checkDependencies("plugin", WithCoordinates.fromPlugins(this.project.getOriginalModel().getBuild().getPluginManagement().getPlugins()));
+            this.checkDependencies("plugin", WithCoordinates.fromPlugins(this.project.getOriginalModel().getBuild().getPlugins()));
         }
         if(this.project.getOriginalModel().getBuild() != null && this.project.getOriginalModel().getBuild().getPluginManagement() != null && this.project.getOriginalModel().getBuild().getPlugins() != null) {
             this.checkDependencies("plugin management plugin", WithCoordinates.fromPlugins(this.project.getOriginalModel().getBuild().getPluginManagement().getPlugins()));

@@ -21,7 +21,7 @@ public interface WithCoordinates {
     String version();
 
     default boolean isSnapshot() {
-        return this.version().endsWith("-SNAPSHOT");
+        return this.version() != null && this.version().endsWith("-SNAPSHOT");
     }
 
 
