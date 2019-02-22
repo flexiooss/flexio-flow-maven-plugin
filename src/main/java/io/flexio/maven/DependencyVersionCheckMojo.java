@@ -2,7 +2,6 @@ package io.flexio.maven;
 
 import io.flexio.maven.report.Report;
 import io.flexio.maven.task.AllDependenciesAreReleasedCheck;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -12,7 +11,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
-import java.util.LinkedList;
 import java.util.List;
 
 @Mojo(name = "check-deps", defaultPhase = LifecyclePhase.VERIFY)
@@ -27,20 +25,34 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if(this.project.getOriginalModel() != null && this.project.getOriginalModel().getDependencies() != null) {
-            this.checkDependencies("declared", this.project.getOriginalModel().getDependencies());
+            this.checkDependencies("declared", WithCoordinates.fromDependencies(this.project.getOriginalModel().getDependencies()));
         }
         if(this.project.getOriginalModel() != null && this.project.getOriginalModel().getDependencyManagement() != null && this.project.getOriginalModel().getDependencyManagement().getDependencies() != null) {
-            this.checkDependencies("declared dependency management", this.project.getOriginalModel().getDependencyManagement().getDependencies());
+            this.checkDependencies("declared dependency management", WithCoordinates.fromDependencies(this.project.getOriginalModel().getDependencyManagement().getDependencies()));
         }
         if(this.project.getDependencies() != null) {
-            this.checkDependencies("resolved", this.project.getDependencies());
+            this.checkDependencies("resolved", WithCoordinates.fromDependencies(this.project.getDependencies()));
         }
         if(this.project.getDependencyManagement() != null && this.project.getDependencyManagement().getDependencies() != null) {
-            this.checkDependencies("resolved dependency management", this.project.getDependencyManagement().getDependencies());
+            this.checkDependencies("resolved dependency management", WithCoordinates.fromDependencies(this.project.getDependencyManagement().getDependencies()));
+        }
+
+
+        if(this.project.getOriginalModel().getBuild() != null && this.project.getOriginalModel().getBuild().getPlugins() != null) {
+            this.checkDependencies("plugin", WithCoordinates.fromPlugins(this.project.getOriginalModel().getBuild().getPluginManagement().getPlugins()));
+        }
+        if(this.project.getOriginalModel().getBuild() != null && this.project.getOriginalModel().getBuild().getPluginManagement() != null && this.project.getOriginalModel().getBuild().getPlugins() != null) {
+            this.checkDependencies("plugin management plugin", WithCoordinates.fromPlugins(this.project.getOriginalModel().getBuild().getPluginManagement().getPlugins()));
+        }
+        if(this.project.getBuild() != null && this.project.getBuild().getPlugins() != null) {
+            this.checkDependencies("resolved plugin", WithCoordinates.fromPlugins(this.project.getBuild().getPluginManagement().getPlugins()));
+        }
+        if(this.project.getBuild() != null && this.project.getBuild().getPluginManagement() != null && this.project.getBuild().getPlugins() != null) {
+            this.checkDependencies("resolved plugin management plugin", WithCoordinates.fromPlugins(this.project.getBuild().getPluginManagement().getPlugins()));
         }
     }
 
-    private void checkDependencies(String level, List<Dependency> deps) throws MojoFailureException, MojoExecutionException {
+    private void checkDependencies(String level, List<WithCoordinates> deps) throws MojoFailureException, MojoExecutionException {
         Report report = new AllDependenciesAreReleasedCheck(deps, this.getLog()).check();
 
         if(this.reportTo != null) {
@@ -59,4 +71,5 @@ public class DependencyVersionCheckMojo extends AbstractMojo {
             report.log(this.getLog(), Report.LogToLevel.INFO);
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package io.flexio.maven.task;
 
+import io.flexio.maven.WithCoordinates;
 import io.flexio.maven.report.Report;
 import org.apache.maven.model.Dependency;
 import org.junit.Before;
@@ -34,22 +35,22 @@ public class AllDependenciesAreReleasedCheckTest {
 
     @Test
     public void givenOneDependency__whenIsSnapshot__thenCheckFailsWithLogs() throws Exception {
-        Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
+        Report report = new AllDependenciesAreReleasedCheck(WithCoordinates.fromDependencies(Arrays.asList(
                 this.createDependency("org.test", "test-dep", "1.0.0-SNAPSHOT", "runtime")
-        ), null).check();
+        )), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(true));
         assertThat(this.logs, contains(
-                "dependency org.test:test-dep:1.0.0-SNAPSHOT in scope runtime is not a released version"
+                "dependency org.test:test-dep:1.0.0-SNAPSHOT is not a released version"
         ));
     }
 
     @Test
     public void givenOneDependency__whenIsReleased__thenCheckPassesWithoutLogs() throws Exception {
-        Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
+        Report report = new AllDependenciesAreReleasedCheck(WithCoordinates.fromDependencies(Arrays.asList(
                 this.createDependency("org.test", "test-dep", "1.0.0", "compile")
-        ), null).check();
+        )), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(false));
@@ -58,29 +59,29 @@ public class AllDependenciesAreReleasedCheckTest {
 
     @Test
     public void givenManyDependencies__whenSomeAreSnapshots__thenCheckFailsWithLogs() throws Exception {
-        Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
+        Report report = new AllDependenciesAreReleasedCheck(WithCoordinates.fromDependencies(Arrays.asList(
                 this.createDependency("org.test", "test-dep-1", "1.0.0-SNAPSHOT", "runtime"),
                 this.createDependency("org.test", "test-dep-2", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-3", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-4", "1.0.0-SNAPSHOT", "runtime")
-        ), null).check();
+        )), null).check();
         report.log(null, to);
 
         assertThat(report.isFailure(), is(true));
         assertThat(this.logs, contains(
-                "dependency org.test:test-dep-1:1.0.0-SNAPSHOT in scope runtime is not a released version",
-                "dependency org.test:test-dep-4:1.0.0-SNAPSHOT in scope runtime is not a released version"
+                "dependency org.test:test-dep-1:1.0.0-SNAPSHOT is not a released version",
+                "dependency org.test:test-dep-4:1.0.0-SNAPSHOT is not a released version"
         ));
     }
 
     @Test
     public void givenManyDependencies__whenNoneAreSnapshots__thenReportIsEmpty() throws Exception {
-        Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
+        Report report = new AllDependenciesAreReleasedCheck(WithCoordinates.fromDependencies(Arrays.asList(
                 this.createDependency("org.test", "test-dep-1", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-2", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-3", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-4", "1.0.0", "runtime")
-        ), null).check();
+        )), null).check();
 
         List<String> reported =new LinkedList<>();
         report.report(line -> reported.add(line));
@@ -90,19 +91,19 @@ public class AllDependenciesAreReleasedCheckTest {
 
     @Test
     public void givenManyDependencies__whenSomeAreSnapshots__thenTheyAreReported() throws Exception {
-        Report report = new AllDependenciesAreReleasedCheck(Arrays.asList(
+        Report report = new AllDependenciesAreReleasedCheck(WithCoordinates.fromDependencies(Arrays.asList(
                 this.createDependency("org.test", "test-dep-1", "1.0.0-SNAPSHOT", "runtime"),
                 this.createDependency("org.test", "test-dep-2", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-3", "1.0.0", "runtime"),
                 this.createDependency("org.test", "test-dep-4", "1.0.0-SNAPSHOT", "runtime")
-        ), null).check();
+        )), null).check();
 
         List<String> reported =new LinkedList<>();
         report.report(line -> reported.add(line));
 
         assertThat(reported, contains(
-                "org.test:test-dep-1:1.0.0-SNAPSHOT:runtime\n",
-                "org.test:test-dep-4:1.0.0-SNAPSHOT:runtime\n"
+                "org.test:test-dep-1:1.0.0-SNAPSHOT\n",
+                "org.test:test-dep-4:1.0.0-SNAPSHOT\n"
         ));
     }
 

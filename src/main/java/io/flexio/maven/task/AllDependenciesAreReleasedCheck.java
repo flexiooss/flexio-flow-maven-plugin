@@ -1,5 +1,6 @@
 package io.flexio.maven.task;
 
+import io.flexio.maven.WithCoordinates;
 import io.flexio.maven.report.Report;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
@@ -8,20 +9,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class AllDependenciesAreReleasedCheck {
-    private List<Dependency> dependencies;
+    private List<WithCoordinates> dependencies;
     private Optional<Log> log;
 
-    public AllDependenciesAreReleasedCheck(List<Dependency> dependencies, Log log) {
+    public AllDependenciesAreReleasedCheck(List<WithCoordinates> dependencies, Log log) {
         this.dependencies = dependencies;
         this.log = Optional.ofNullable(log);
     }
 
     public Report check() {
         Report result = new Report();
-
-        for (Dependency dependency : this.dependencies) {
-            if(dependency.getVersion() != null) {
-                if (dependency.getVersion().endsWith("-SNAPSHOT")) {
+        for (WithCoordinates dependency : this.dependencies) {
+            if(dependency.version() != null) {
+                if (dependency.isSnapshot()) {
                     result.hasFailed(true);
                     result.append(dependency);
                 }

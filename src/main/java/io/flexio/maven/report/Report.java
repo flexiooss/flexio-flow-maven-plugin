@@ -1,5 +1,6 @@
 package io.flexio.maven.report;
 
+import io.flexio.maven.WithCoordinates;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
 
@@ -25,10 +26,10 @@ public class Report {
 
 
     private boolean failed = false;
-    private final List<Dependency> snapshotDependencies = new LinkedList<>();
+    private final List<WithCoordinates> snapshotDependencies = new LinkedList<>();
 
 
-    public void append(Dependency dependency) {
+    public void append(WithCoordinates dependency) {
         this.snapshotDependencies.add(dependency);
     }
 
@@ -42,13 +43,12 @@ public class Report {
     }
 
     public void log(Log log, LogToLevel to) {
-        for (Dependency dependency : this.snapshotDependencies) {
+        for (WithCoordinates dependency : this.snapshotDependencies) {
             to.logWith(
-                    String.format("dependency %s:%s:%s in scope %s is not a released version",
-                            dependency.getGroupId(),
-                            dependency.getArtifactId(),
-                            dependency.getVersion(),
-                            dependency.getScope()
+                    String.format("dependency %s:%s:%s is not a released version",
+                            dependency.groupId(),
+                            dependency.artifactId(),
+                            dependency.version()
                     ),
                     log
             );
@@ -56,12 +56,11 @@ public class Report {
     }
 
     public void report(Reporter reporter) throws IOException {
-        for (Dependency dependency : this.snapshotDependencies) {
-            reporter.write(String.format("%s:%s:%s:%s\n",
-                    dependency.getGroupId(),
-                    dependency.getArtifactId(),
-                    dependency.getVersion(),
-                    dependency.getScope()
+        for (WithCoordinates dependency : this.snapshotDependencies) {
+            reporter.write(String.format("%s:%s:%s\n",
+                    dependency.groupId(),
+                    dependency.artifactId(),
+                    dependency.version()
             ));
         }
     }
