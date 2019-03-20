@@ -18,7 +18,7 @@ public class AllDependenciesAreReleasedCheck {
     }
 
     public Report check() {
-        Report result = new Report();
+        Report result = new Report("dependency %s:%s:%s is not a released version");
         for (WithCoordinates dependency : this.dependencies) {
             if(dependency.version() != null) {
                 if (dependency.isSnapshot()) {
