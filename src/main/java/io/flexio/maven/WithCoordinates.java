@@ -25,6 +25,7 @@ public abstract class WithCoordinates {
         return artifacts.stream().map(plugin -> from(plugin)).collect(Collectors.toList());
     }
 
+
     public abstract String groupId();
     public abstract String artifactId();
     public abstract String version();
@@ -129,6 +130,25 @@ public abstract class WithCoordinates {
             @Override
             public String version() {
                 return coords[2];
+            }
+        };
+    }
+
+    public static WithCoordinates from(String groupId, String artifactId, String version) {
+        return new WithCoordinates() {
+            @Override
+            public String groupId() {
+                return groupId;
+            }
+
+            @Override
+            public String artifactId() {
+                return artifactId;
+            }
+
+            @Override
+            public String version() {
+                return version;
             }
         };
     }

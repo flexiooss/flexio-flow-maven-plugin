@@ -59,6 +59,9 @@ public class DependsOnMojo extends AbstractMojo {
     private HashSet<WithCoordinates> collect() {
         HashSet<WithCoordinates> all = new HashSet<>();
 
+        if(this.project.getParent() != null) {
+            all.add(WithCoordinates.from(this.project.getParent().getGroupId(), this.project.getParent().getArtifactId(), this.project.getParent().getVersion()));
+        }
         if(this.project.getOriginalModel() != null && this.project.getOriginalModel().getDependencies() != null) {
             all.addAll(WithCoordinates.fromDependencies(this.project.getOriginalModel().getDependencies()));
         }
